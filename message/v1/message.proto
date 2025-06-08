@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package message.v1;
+
+option go_package = "github.com/dev-shimada/grpc-federation-playground/gen/message/v1;messagev1";
+
+service MessageService {
+  rpc Post(PostRequest) returns (PostResponse);
+  rpc Get(GetRequest) returns (GetResponse);
+  rpc PingPong(PingPongRequest) returns (PingPongResponse);
+}
+
+message UUID {
+  bytes value = 1;
+}
+
+message PostRequest {
+  UUID user_id = 1;
+  string text = 2;
+}
+
+message PostResponse {
+  UUID id = 1;
+}
+
+message GetRequest {
+  UUID id = 1;
+}
+
+message GetResponse {
+  UUID user_id = 1;
+  string text = 2;
+}
+
+message PingPongRequest {
+  UUID user_id = 1;
+  string text = 2;
+}
+
+message PingPongResponse {
+  UUID user_id = 1;
+  string text = 2;
+}
