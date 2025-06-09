@@ -83,7 +83,7 @@ func (s server) Post(ctx context.Context, req *connect.Request[messagev1.PostReq
 	}
 	return &connect.Response[messagev1.PostResponse]{
 		Msg: &messagev1.PostResponse{
-			Id: &messagev1.UUID{Value: []byte(id.String())},
+			Id: id.String(),
 		},
 	}, nil
 }
@@ -98,7 +98,7 @@ func (s server) Get(ctx context.Context, req *connect.Request[messagev1.GetReque
 
 	return &connect.Response[messagev1.GetResponse]{
 		Msg: &messagev1.GetResponse{
-			UserId: &messagev1.UUID{Value: []byte(id.String())},
+			UserId: id.String(),
 			Text:   "This is a sample message",
 		},
 	}, nil

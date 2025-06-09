@@ -26,30 +26,16 @@ buf generate
 /message.v1.MessageService/Post
 ```
 ```console
-# grpcurl -plaintext localhost:8081 list message.v1.Message
-message.Message.PingPong
-message.Message.Subscribe
+# grpcurl -plaintext localhost:8081 list message.v1.MessageService
+message.v1.MessageService.Get
+message.v1.MessageService.PingPong
+message.v1.MessageService.Post
 ```
 ```console
-# grpcurl -plaintext -d '{"user": "my self"}' localhost:8081 message.v1.Message.Subscribe
+# grpcurl -plaintext -d '{"user_id": "test_id", "text": "hello!"}' localhost:8081 message.v1.MessageService.PingPong
 {
-  "from": "my self",
-  "message": "0: Hello, my self!"
-}
-{
-  "from": "my self",
-  "message": "1: Hello, my self!"
-}
-{
-  "from": "my self",
-  "message": "2: Hello, my self!"
-}
-```
-```console
-# grpcurl -plaintext -d '{"user": "my self", "message": "hello!"}' localhost:8081 message.v1.Message.PingPong
-{
-  "from": "my self",
-  "message": "hello!"
+  "userId": "test_id",
+  "text": "hello!"
 }
 ```
 ```console
@@ -59,13 +45,19 @@ message.Message.Subscribe
 }
 ```
 ```console
-# grpcurl -plaintext -d '{"service": "/message.v1.Message/PingPong"}' localhost:8081 grpc.health.v1.Health.Check
+# grpcurl -plaintext -d '{"service": "/message.v1.MessageService/PingPong"}' localhost:8081 grpc.health.v1.Health.Check
 {
   "status": "SERVING"
 }
 ```
 ```console
-# grpcurl -plaintext -d '{"service": "/message.v1.Message/Subscribe"}' localhost:8081 grpc.health.v1.Health.Check
+# grpcurl -plaintext -d '{"service": "/message.v1.MessageService/Get"}' localhost:8081 grpc.health.v1.Health.Check
+{
+  "status": "SERVING"
+}
+```
+```console
+# grpcurl -plaintext -d '{"service": "/message.v1.MessageService/Post"}' localhost:8081 grpc.health.v1.Health.Check
 {
   "status": "SERVING"
 }
