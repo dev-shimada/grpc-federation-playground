@@ -3,8 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"log/slog"
 	"net/http"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"connectrpc.com/connect"
 	"connectrpc.com/grpchealth"
@@ -16,7 +20,14 @@ import (
 	"golang.org/x/net/http2/h2c"
 )
 
-type server struct{}
+const (
+	Host = "0.0.0.0"
+	Port = 8081
+)
+
+type server struct {
+	*http.Server
+}
 
 // domain model
 type Message struct {
@@ -103,8 +114,9 @@ func (s server) PingPong(ctx context.Context, req *connect.Request[messagev1.Pin
 }
 
 func main() {
-	// grpcServer := grpc.NewServer()
-	messager := &server{}
+	// json logger
+	slog.SetDefault(slog.New(slog.NewJSONHandler(log.Writer(), nil)))
+
 	mux := http.NewServeMux()
 
 	// reflection
@@ -124,17 +136,38 @@ func main() {
 	)
 	mux.Handle(grpchealth.NewHandler(checker))
 
+	svc := &server{
+		&http.Server{
+			Addr:    fmt.Sprintf("%s:%d", Host, Port),
+			Handler: h2c.NewHandler(mux, &http2.Server{}),
+		},
+	}
+
 	// message
-	// path, handler := messagev1connect.NewMessageHandler(messager)
-	path, handler := messagev1connect.NewMessageServiceHandler(messager)
+	path, handler := messagev1connect.NewMessageServiceHandler(svc)
 	mux.Handle(path, handler)
 
 	// start server
-	slog.Info("Server is running on port :8081")
-	if err := http.ListenAndServe(
-		"0.0.0.0:8081",
-		h2c.NewHandler(mux, &http2.Server{}),
-	); err != nil {
-		slog.Error(fmt.Sprintf("Failed to serve: %v", err))
+	ctx, _ := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	slog.Info(fmt.Sprintf("Server is running at %s:%d", Host, Port))
+	go func() {
+		if err := svc.ListenAndServe(); err != nil {
+			if err == http.ErrServerClosed {
+				slog.Info("Server closed.")
+			} else {
+				slog.Error(fmt.Sprintf("Failed to serve: %v", err))
+			}
+		}
+	}()
+	<-ctx.Done()
+
+	// Graceful shutdown
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// Shutdown the server
+	slog.Info("Shutting down server...")
+	if err := svc.Shutdown(shutdownCtx); err != nil {
+		slog.Error(fmt.Sprintf("Failed to shutdown server: %v", err))
 	}
 }

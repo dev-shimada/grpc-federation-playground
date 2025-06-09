@@ -1,0 +1,17 @@
+services:
+  message:
+    build:
+      context: ../message
+      dockerfile: ../.devcontainer/message/Dockerfile
+    image: message-server
+    ports:
+      - "8081:8081"
+    volumes:
+      - ..:/workspace:cached
+    # healthcheck:
+    #   test: ["CMD-SHELL", "grpc-health-probe --addr=:8080 || exit 1"]
+    #   interval: 5s
+    #   timeout: 5s
+    #   retries: 2
+    #   start_period: 5s
+    command: sleep infinity

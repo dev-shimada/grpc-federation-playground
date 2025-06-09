@@ -1,0 +1,29 @@
+{
+    "name": "grpc-federation-playground",
+    // "build": {
+    //     "context": ".",
+    //     "dockerfile": "Dockerfile",
+    //     "target": "vscode"
+    // },
+    "dockerComposeFile": "../compose.yaml",
+    "service": "message",
+    "workspaceFolder": "/workspace/message",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "golang.Go",
+                "GitHub.copilot",
+                "RooVeterinaryInc.roo-cline",
+                "bufbuild.vscode-buf"
+            ]
+        }
+    },
+    // "mounts": [
+    //     "source=${localWorkspaceFolder}/,target=/workspace,type=bind"
+    // ],
+    // "forwardPorts": [
+    //     8080
+    // ],
+    "remoteUser": "root",
+    "postCreateCommand": "/bin/sh ../.devcontainer/message/post_create.sh"
+}
