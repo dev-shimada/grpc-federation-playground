@@ -30,7 +30,7 @@ message.v1.MessageService.PingPong
 message.v1.MessageService.Post
 ```
 ```console
-# grpcurl -plaintext localhost:8081 grpc.health.v1.Health.Check
+# grpcurl -plaintext -d '{"service": "message.v1.MessageService"}' localhost:8081 grpc.health.v1.Health.Check
 {
   "status": "SERVING"
 }
@@ -60,7 +60,7 @@ message.v1.MessageService.Post
 
 ## curl
 ```console
-# curl --json '{}' localhost:8081/grpc.health.v1.Health/Check
+# curl --json '{"service": "message.v1.MessageService"}' localhost:8081/grpc.health.v1.Health/Check
 {"status":"SERVING_STATUS_SERVING"}
 ```
 ```console
