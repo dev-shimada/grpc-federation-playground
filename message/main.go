@@ -172,18 +172,14 @@ func main() {
 
 	// reflection
 	reflector := grpcreflect.NewStaticReflector(
-		messagev1connect.MessageServicePingPongProcedure,
-		messagev1connect.MessageServicePostProcedure,
-		messagev1connect.MessageServiceGetProcedure,
+		messagev1connect.MessageServiceName,
 	)
 	mux.Handle(grpcreflect.NewHandlerV1(reflector))
 	mux.Handle(grpcreflect.NewHandlerV1Alpha(reflector))
 
 	// health check
 	checker := grpchealth.NewStaticChecker(
-		messagev1connect.MessageServicePingPongProcedure,
-		messagev1connect.MessageServicePostProcedure,
-		messagev1connect.MessageServiceGetProcedure,
+		messagev1connect.MessageServiceName,
 	)
 	mux.Handle(grpchealth.NewHandler(checker))
 
