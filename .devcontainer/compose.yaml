@@ -2,16 +2,31 @@ services:
   message:
     build:
       context: ../message
-      dockerfile: ../.devcontainer/message/Dockerfile
+      dockerfile: ../message/Dockerfile
     image: message-server
     ports:
       - "8081:8081"
-    volumes:
-      - ..:/workspace:cached
+    # volumes:
+    #   - .:/app:cached
     # healthcheck:
     #   test: ["CMD-SHELL", "grpc-health-probe --addr=:8081 || exit 1"]
     #   interval: 5s
     #   timeout: 5s
     #   retries: 2
     #   start_period: 5s
-    command: sleep infinity
+  user:
+    build:
+      context: ../user
+      dockerfile: ../user/Dockerfile
+    image: user-server
+    ports:
+      - "8082:8082"
+    # volumes:
+    #   - .:/app:cached
+    # healthcheck:
+    #   test: ["CMD-SHELL", "grpc-health-probe --addr=:8082 || exit 1"]
+    #   interval: 5s
+    #   timeout: 5s
+    #   retries: 2
+    #   start_period: 5s
+
