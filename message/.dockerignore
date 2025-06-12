@@ -1,0 +1,7 @@
+*
+!go.mod
+!go.sum
+!ent
+!gen
+!message
+!main.go
