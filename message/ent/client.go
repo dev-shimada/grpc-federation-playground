@@ -9,13 +9,13 @@ import (
 	"log"
 	"reflect"
 
-	"github.com/dev-shimada/grpc-federation-playground/ent/migrate"
+	"github.com/dev-shimada/grpc-federation-playground/message/ent/migrate"
 	"github.com/google/uuid"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
-	"github.com/dev-shimada/grpc-federation-playground/ent/message"
+	"github.com/dev-shimada/grpc-federation-playground/message/ent/message"
 )
 
 // Client is the client that holds all ent builders.

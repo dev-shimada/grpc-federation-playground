@@ -11,8 +11,8 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/dev-shimada/grpc-federation-playground/ent/message"
-	"github.com/dev-shimada/grpc-federation-playground/ent/predicate"
+	"github.com/dev-shimada/grpc-federation-playground/message/ent/message"
+	"github.com/dev-shimada/grpc-federation-playground/message/ent/predicate"
 	"github.com/google/uuid"
 )
 

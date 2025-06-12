@@ -8,22 +8,23 @@ import (
 	"github.com/google/uuid"
 )
 
-// Message holds the schema definition for the Message entity.
-type Message struct {
+// User holds the schema definition for the User entity.
+type User struct {
 	ent.Schema
 }
 
-// Fields of the Message.
-func (Message) Fields() []ent.Field {
+// Fields of the User.
+func (User) Fields() []ent.Field {
 	return []ent.Field{
 		field.UUID("id", uuid.UUID{}).
 			Default(uuid.New).
 			StorageKey("id").
 			Unique().
 			Immutable(),
-		field.String("user_id").
+		field.String("email").
+			Unique().
 			NotEmpty(),
-		field.String("text").
+		field.String("name").
 			NotEmpty(),
 		field.Time("created_at").
 			Default(time.Now).
@@ -34,7 +35,7 @@ func (Message) Fields() []ent.Field {
 	}
 }
 
-// Edges of the Message.
-func (Message) Edges() []ent.Edge {
+// Edges of the User.
+func (User) Edges() []ent.Edge {
 	return nil
 }

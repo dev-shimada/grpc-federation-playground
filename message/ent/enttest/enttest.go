@@ -5,12 +5,12 @@ package enttest
 import (
 	"context"
 
-	"github.com/dev-shimada/grpc-federation-playground/ent"
+	"github.com/dev-shimada/grpc-federation-playground/message/ent"
 	// required by schema hooks.
-	_ "github.com/dev-shimada/grpc-federation-playground/ent/runtime"
+	_ "github.com/dev-shimada/grpc-federation-playground/message/ent/runtime"
 
 	"entgo.io/ent/dialect/sql/schema"
-	"github.com/dev-shimada/grpc-federation-playground/ent/migrate"
+	"github.com/dev-shimada/grpc-federation-playground/message/ent/migrate"
 )
 
 type (

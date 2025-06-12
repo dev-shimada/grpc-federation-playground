@@ -11,6 +11,12 @@
 
 - Docker
 
+### Generating Ent Code
+To generate the Ent code, run:
+```bash
+go generate ent/generate.go
+```
+
 ### Generating Protobuf Code
 
 To generate the protobuf code using Buf, run:

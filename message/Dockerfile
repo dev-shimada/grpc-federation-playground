@@ -22,13 +22,8 @@ EOF
 
 FROM --platform=$BUILDPLATFORM gcr.io/distroless/base-debian12:latest
 WORKDIR /app
-# COPY --chown=nonroot:nonroot --from=build /workspace/bin/app /app/app
 COPY --from=build /workspace/bin/app /app/app
-# COPY --chown=nonroot:nonroot --from=build /go/bin/grpc-health-probe /bin/grpc-health-probe
 COPY --from=build /go/bin/grpc-health-probe /bin/grpc-health-probe
-HEALTHCHECK --interval=10s --timeout=3s --start-period=5s \
-  CMD ["/bin/grpc-health-probe", "-addr=:8081"] || exit 1
-# USER nonroot
+HEALTHCHECK --interval=10s --timeout=3s --start-period=5s CMD ["/bin/grpc-health-probe", "-addr=:8081"] || exit 1
 EXPOSE 8081
 ENTRYPOINT [ "/app/app" ]
-# CMD [ "--host", "0.0.0.0" ]

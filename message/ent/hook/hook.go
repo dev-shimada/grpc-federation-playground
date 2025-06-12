@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/dev-shimada/grpc-federation-playground/ent"
+	"github.com/dev-shimada/grpc-federation-playground/message/ent"
 )
 
 // The MessageFunc type is an adapter to allow the use of ordinary

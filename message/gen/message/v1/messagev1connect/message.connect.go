@@ -8,7 +8,7 @@ import (
 	connect "connectrpc.com/connect"
 	context "context"
 	errors "errors"
-	v1 "github.com/dev-shimada/grpc-federation-playground/gen/message/v1"
+	v1 "github.com/dev-shimada/grpc-federation-playground/message/gen/message/v1"
 	http "net/http"
 	strings "strings"
 )

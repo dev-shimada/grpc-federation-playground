@@ -343,8 +343,8 @@ const file_message_v1_message_proto_rawDesc = "" +
 	"\x0eMessageService\x129\n" +
 	"\x04Post\x12\x17.message.v1.PostRequest\x1a\x18.message.v1.PostResponse\x126\n" +
 	"\x03Get\x12\x16.message.v1.GetRequest\x1a\x17.message.v1.GetResponse\x12E\n" +
-	"\bPingPong\x12\x1b.message.v1.PingPongRequest\x1a\x1c.message.v1.PingPongResponseB\xb3\x01\n" +
-	"\x0ecom.message.v1B\fMessageProtoP\x01ZJgithub.com/dev-shimada/grpc-federation-playground/gen/message/v1;messagev1\xa2\x02\x03MXX\xaa\x02\n" +
+	"\bPingPong\x12\x1b.message.v1.PingPongRequest\x1a\x1c.message.v1.PingPongResponseB\xbb\x01\n" +
+	"\x0ecom.message.v1B\fMessageProtoP\x01ZRgithub.com/dev-shimada/grpc-federation-playground/message/gen/message/v1;messagev1\xa2\x02\x03MXX\xaa\x02\n" +
 	"Message.V1\xca\x02\n" +
 	"Message\\V1\xe2\x02\x16Message\\V1\\GPBMetadata\xea\x02\vMessage::V1b\x06proto3"
 

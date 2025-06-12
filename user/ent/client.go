@@ -9,13 +9,13 @@ import (
 	"log"
 	"reflect"
 
-	"github.com/dev-shimada/grpc-federation-playground/ent/migrate"
+	"github.com/dev-shimada/grpc-federation-playground/user/ent/migrate"
 	"github.com/google/uuid"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
-	"github.com/dev-shimada/grpc-federation-playground/ent/message"
+	"github.com/dev-shimada/grpc-federation-playground/user/ent/user"
 )
 
 // Client is the client that holds all ent builders.
@@ -23,8 +23,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
-	// Message is the client for interacting with the Message builders.
-	Message *MessageClient
+	// User is the client for interacting with the User builders.
+	User *UserClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -36,7 +36,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
-	c.Message = NewMessageClient(c.config)
+	c.User = NewUserClient(c.config)
 }
 
 type (
@@ -127,9 +127,9 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:     ctx,
-		config:  cfg,
-		Message: NewMessageClient(cfg),
+		ctx:    ctx,
+		config: cfg,
+		User:   NewUserClient(cfg),
 	}, nil
 }
 
@@ -147,16 +147,16 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:     ctx,
-		config:  cfg,
-		Message: NewMessageClient(cfg),
+		ctx:    ctx,
+		config: cfg,
+		User:   NewUserClient(cfg),
 	}, nil
 }
 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Message.
+//		User.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -178,126 +178,126 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.Message.Use(hooks...)
+	c.User.Use(hooks...)
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
-	c.Message.Intercept(interceptors...)
+	c.User.Intercept(interceptors...)
 }
 
 // Mutate implements the ent.Mutator interface.
 func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
-	case *MessageMutation:
-		return c.Message.mutate(ctx, m)
+	case *UserMutation:
+		return c.User.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
 	}
 }
 
-// MessageClient is a client for the Message schema.
-type MessageClient struct {
+// UserClient is a client for the User schema.
+type UserClient struct {
 	config
 }
 
-// NewMessageClient returns a client for the Message from the given config.
-func NewMessageClient(c config) *MessageClient {
-	return &MessageClient{config: c}
+// NewUserClient returns a client for the User from the given config.
+func NewUserClient(c config) *UserClient {
+	return &UserClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `message.Hooks(f(g(h())))`.
-func (c *MessageClient) Use(hooks ...Hook) {
-	c.hooks.Message = append(c.hooks.Message, hooks...)
+// A call to `Use(f, g, h)` equals to `user.Hooks(f(g(h())))`.
+func (c *UserClient) Use(hooks ...Hook) {
+	c.hooks.User = append(c.hooks.User, hooks...)
 }
 
 // Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `message.Intercept(f(g(h())))`.
-func (c *MessageClient) Intercept(interceptors ...Interceptor) {
-	c.inters.Message = append(c.inters.Message, interceptors...)
+// A call to `Intercept(f, g, h)` equals to `user.Intercept(f(g(h())))`.
+func (c *UserClient) Intercept(interceptors ...Interceptor) {
+	c.inters.User = append(c.inters.User, interceptors...)
 }
 
-// Create returns a builder for creating a Message entity.
-func (c *MessageClient) Create() *MessageCreate {
-	mutation := newMessageMutation(c.config, OpCreate)
-	return &MessageCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a builder for creating a User entity.
+func (c *UserClient) Create() *UserCreate {
+	mutation := newUserMutation(c.config, OpCreate)
+	return &UserCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of Message entities.
-func (c *MessageClient) CreateBulk(builders ...*MessageCreate) *MessageCreateBulk {
-	return &MessageCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of User entities.
+func (c *UserClient) CreateBulk(builders ...*UserCreate) *UserCreateBulk {
+	return &UserCreateBulk{config: c.config, builders: builders}
 }
 
 // MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
 // a builder and applies setFunc on it.
-func (c *MessageClient) MapCreateBulk(slice any, setFunc func(*MessageCreate, int)) *MessageCreateBulk {
+func (c *UserClient) MapCreateBulk(slice any, setFunc func(*UserCreate, int)) *UserCreateBulk {
 	rv := reflect.ValueOf(slice)
 	if rv.Kind() != reflect.Slice {
-		return &MessageCreateBulk{err: fmt.Errorf("calling to MessageClient.MapCreateBulk with wrong type %T, need slice", slice)}
+		return &UserCreateBulk{err: fmt.Errorf("calling to UserClient.MapCreateBulk with wrong type %T, need slice", slice)}
 	}
-	builders := make([]*MessageCreate, rv.Len())
+	builders := make([]*UserCreate, rv.Len())
 	for i := 0; i < rv.Len(); i++ {
 		builders[i] = c.Create()
 		setFunc(builders[i], i)
 	}
-	return &MessageCreateBulk{config: c.config, builders: builders}
+	return &UserCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for Message.
-func (c *MessageClient) Update() *MessageUpdate {
-	mutation := newMessageMutation(c.config, OpUpdate)
-	return &MessageUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for User.
+func (c *UserClient) Update() *UserUpdate {
+	mutation := newUserMutation(c.config, OpUpdate)
+	return &UserUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *MessageClient) UpdateOne(m *Message) *MessageUpdateOne {
-	mutation := newMessageMutation(c.config, OpUpdateOne, withMessage(m))
-	return &MessageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *UserClient) UpdateOne(u *User) *UserUpdateOne {
+	mutation := newUserMutation(c.config, OpUpdateOne, withUser(u))
+	return &UserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *MessageClient) UpdateOneID(id uuid.UUID) *MessageUpdateOne {
-	mutation := newMessageMutation(c.config, OpUpdateOne, withMessageID(id))
-	return &MessageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *UserClient) UpdateOneID(id uuid.UUID) *UserUpdateOne {
+	mutation := newUserMutation(c.config, OpUpdateOne, withUserID(id))
+	return &UserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for Message.
-func (c *MessageClient) Delete() *MessageDelete {
-	mutation := newMessageMutation(c.config, OpDelete)
-	return &MessageDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for User.
+func (c *UserClient) Delete() *UserDelete {
+	mutation := newUserMutation(c.config, OpDelete)
+	return &UserDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *MessageClient) DeleteOne(m *Message) *MessageDeleteOne {
-	return c.DeleteOneID(m.ID)
+func (c *UserClient) DeleteOne(u *User) *UserDeleteOne {
+	return c.DeleteOneID(u.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *MessageClient) DeleteOneID(id uuid.UUID) *MessageDeleteOne {
-	builder := c.Delete().Where(message.ID(id))
+func (c *UserClient) DeleteOneID(id uuid.UUID) *UserDeleteOne {
+	builder := c.Delete().Where(user.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &MessageDeleteOne{builder}
+	return &UserDeleteOne{builder}
 }
 
-// Query returns a query builder for Message.
-func (c *MessageClient) Query() *MessageQuery {
-	return &MessageQuery{
+// Query returns a query builder for User.
+func (c *UserClient) Query() *UserQuery {
+	return &UserQuery{
 		config: c.config,
-		ctx:    &QueryContext{Type: TypeMessage},
+		ctx:    &QueryContext{Type: TypeUser},
 		inters: c.Interceptors(),
 	}
 }
 
-// Get returns a Message entity by its id.
-func (c *MessageClient) Get(ctx context.Context, id uuid.UUID) (*Message, error) {
-	return c.Query().Where(message.ID(id)).Only(ctx)
+// Get returns a User entity by its id.
+func (c *UserClient) Get(ctx context.Context, id uuid.UUID) (*User, error) {
+	return c.Query().Where(user.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *MessageClient) GetX(ctx context.Context, id uuid.UUID) *Message {
+func (c *UserClient) GetX(ctx context.Context, id uuid.UUID) *User {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -306,36 +306,36 @@ func (c *MessageClient) GetX(ctx context.Context, id uuid.UUID) *Message {
 }
 
 // Hooks returns the client hooks.
-func (c *MessageClient) Hooks() []Hook {
-	return c.hooks.Message
+func (c *UserClient) Hooks() []Hook {
+	return c.hooks.User
 }
 
 // Interceptors returns the client interceptors.
-func (c *MessageClient) Interceptors() []Interceptor {
-	return c.inters.Message
+func (c *UserClient) Interceptors() []Interceptor {
+	return c.inters.User
 }
 
-func (c *MessageClient) mutate(ctx context.Context, m *MessageMutation) (Value, error) {
+func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error) {
 	switch m.Op() {
 	case OpCreate:
-		return (&MessageCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&UserCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdate:
-		return (&MessageUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&UserUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdateOne:
-		return (&MessageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&UserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpDelete, OpDeleteOne:
-		return (&MessageDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+		return (&UserDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
-		return nil, fmt.Errorf("ent: unknown Message mutation op: %q", m.Op())
+		return nil, fmt.Errorf("ent: unknown User mutation op: %q", m.Op())
 	}
 }
 
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Message []ent.Hook
+		User []ent.Hook
 	}
 	inters struct {
-		Message []ent.Interceptor
+		User []ent.Interceptor
 	}
 )

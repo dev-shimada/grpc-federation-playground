@@ -10,7 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/dev-shimada/grpc-federation-playground/ent/message"
+	"github.com/dev-shimada/grpc-federation-playground/message/ent/message"
 	"github.com/google/uuid"
 )
 

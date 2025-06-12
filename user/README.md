@@ -1,7 +1,7 @@
-# gRPC message sample
+# gRPC user sample
 ## Project Structure
 
-- `proto/message/`: Contains the protobuf definitions and generated code.
+- `proto/user/`: Contains the protobuf definitions and generated code.
 - `buf.yaml`: Configuration for Buf, a tool for managing Protobuf files.
 - `buf.gen.yaml`: Configuration for generating code from Protobuf files.
 
@@ -10,6 +10,12 @@
 ### Prerequisites
 
 - Docker
+
+### Generating Ent Code
+To generate the Ent code, run:
+```bash
+go generate ent/generate.go
+```
 
 ### Generating Protobuf Code
 
@@ -20,60 +26,61 @@ buf generate
 
 ## grpcurl
 ```console
-# grpcurl -plaintext localhost:8081 list
-message.v1.MessageService
+# grpcurl -plaintext localhost:8082 list
+user.v1.UserService
 ```
 ```console
-# grpcurl -plaintext localhost:8081 list message.v1.MessageService
-message.v1.MessageService.Get
-message.v1.MessageService.PingPong
-message.v1.MessageService.Post
+# grpcurl -plaintext localhost:8082 list user.v1.UserService
+user.v1.UserService.Get
+user.v1.UserService.PingPong
+user.v1.UserService.Post
 ```
 ```console
-# grpcurl -plaintext -d '{"service": "message.v1.MessageService"}' localhost:8081 grpc.health.v1.Health.Check
+# grpcurl -plaintext -d '{"service": "user.v1.UserService"}' localhost:8082 grpc.health.v1.Health.Check
 {
   "status": "SERVING"
 }
 ```
 ```console
-# grpcurl -plaintext -d '{"user_id": "test_id", "text": "hello!"}' localhost:8081 message.v1.MessageService.PingPong
+# grpcurl -plaintext -d '{"email": "test@example.com", "name": "test_name"}' localhost:8082 user.v1.UserService.PingPong
 {
   "userId": "test_id",
   "text": "hello!"
 }
 ```
 ```console
-# uuidgen
-210af8e1-9aee-4d2a-8751-e7d2cd9d39d3
-# grpcurl -plaintext -d '{"user_id": "210af8e1-9aee-4d2a-8751-e7d2cd9d39d3", "text": "hello!"}' localhost:8081 message.v1.MessageService.Post
+# grpcurl -plaintext -d '{"email": "test@example.com", "name": "test_name"}' localhost:8082 user.v1.UserService.Post
 {
-  "id": "01975d1b-f11a-77c0-a979-9f7dc73436e9"
+  "id": "019764ad-b9c9-75b9-9663-716d625cc350",
+  "email": "test@example.com",
+  "name": "test_name"
 }
 ```
 ```console
-# grpcurl -plaintext -d '{"id": "01975d1b-f11a-77c0-a979-9f7dc73436e9"}' localhost:8081 message.v1.MessageService.Get
+# grpcurl -plaintext -d '{"id": "019764ad-b9c9-75b9-9663-716d625cc350"}' localhost:8082 user.v1.UserService.Get
 {
-  "userId": "210af8e1-9aee-4d2a-8751-e7d2cd9d39d3",
-  "text": "hello!"
+  "id": "019764ad-b9c9-75b9-9663-716d625cc350",
+  "email": "test@example.com",
+  "name": "test_name",
+  "createdAt": "2025-06-12T15:06:36Z",
+  "updatedAt": "2025-06-12T15:06:36Z"
 }
 ```
 
 ## curl
 ```console
-# curl --json '{"service": "message.v1.MessageService"}' localhost:8081/grpc.health.v1.Health/Check
+# curl --json '{"service": "user.v1.UserService"}' localhost:8082/grpc.health.v1.Health/Check
 {"status":"SERVING_STATUS_SERVING"}
 ```
 ```console
-# curl --json '{"user_id": "test_id", "text": "hello!"}' localhost:8081/message.v1.MessageService/PingPong
-{"userId":"test_id","text":"hello!"}
+# curl --json '{"email": "test@example.com", "name": "test_name"}' localhost:8082/user.v1.UserService/PingPong
+{"email":"test@example.com", "name":"test_name"}
 ```
 ```console
-# uuidgen
-a4ddbcb1-7a8d-4f25-8a94-ea5ca7fe0b4b
-# curl --json '{"user_id": "a4ddbcb1-7a8d-4f25-8a94-ea5ca7fe0b4b", "text": "hello! from curl"}' localhost:8081/message.v1.MessageService/Post
-{"id":"01975d21-0d2a-7ee8-85de-ba5764e23a1d"}
+# curl --json '{"email": "test@example.com", "name": "test_name"}' localhost:8082/user.v1.UserService/Post
+{"id":"019764b1-4dc8-7114-928f-6526676648d4", "email":"test@example.com", "name":"test_name"}
 ```
 ```console
-# curl --json '{"id": "01975d21-0d2a-7ee8-85de-ba5764e23a1d"}' localhost:8081/message.v1.MessageService/Get
-{"userId":"a4ddbcb1-7a8d-4f25-8a94-ea5ca7fe0b4b","text":"hello! from curl"}
+# curl --json '{"id": "019764b1-4dc8-7114-928f-6526676648d4"}' localhost:8082/user.v1.UserService/Get
+{"id":"019764b1-4dc8-7114-928f-6526676648d4", "email":"test@example.com", "name":"test_name", "createdAt":"2025-06-12T15:10:30Z", "updatedAt":"2025-06-12T15:10:30Z"}
 ```

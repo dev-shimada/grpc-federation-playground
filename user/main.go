@@ -13,19 +13,20 @@ import (
 	"connectrpc.com/connect"
 	"connectrpc.com/grpchealth"
 	"connectrpc.com/grpcreflect"
-	"github.com/dev-shimada/grpc-federation-playground/ent"
-	"github.com/dev-shimada/grpc-federation-playground/ent/message"
-	messagev1 "github.com/dev-shimada/grpc-federation-playground/gen/message/v1"
-	"github.com/dev-shimada/grpc-federation-playground/gen/message/v1/messagev1connect"
+	"github.com/dev-shimada/grpc-federation-playground/user/ent"
+	"github.com/dev-shimada/grpc-federation-playground/user/ent/user"
+
+	userv1 "github.com/dev-shimada/grpc-federation-playground/user/gen/user/v1"
+
+	"github.com/dev-shimada/grpc-federation-playground/user/gen/user/v1/userv1connect"
 	"github.com/google/uuid"
-	_ "github.com/mattn/go-sqlite3"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 )
 
 const (
 	Host = "0.0.0.0"
-	Port = 8081
+	Port = 8082
 )
 
 type server struct {
@@ -34,16 +35,18 @@ type server struct {
 }
 
 // domain model
-type Message struct {
-	ID     string
-	UserID string
-	Text   string
+type User struct {
+	ID        string
+	Email     string
+	Name      string
+	CreatedAt string
+	UpdatedAt string
 }
 
 // repository interface
-type MessageRepository interface {
-	Save(ctx context.Context, msg Message) error
-	Get(ctx context.Context, id string) (*Message, error)
+type UserRepository interface {
+	Save(ctx context.Context, msg User) error
+	Get(ctx context.Context, id string) (*User, error)
 }
 
 // ent-based repository implementation
@@ -51,99 +54,108 @@ type EntRepository struct {
 	client *ent.Client
 }
 
-func NewEntRepository(client *ent.Client) MessageRepository {
+func NewEntRepository(client *ent.Client) UserRepository {
 	return &EntRepository{client: client}
 }
 
-func (r *EntRepository) Save(ctx context.Context, msg Message) error {
-	userID, err := uuid.Parse(msg.UserID)
+func (r *EntRepository) Save(ctx context.Context, user User) error {
+	ID, err := uuid.Parse(user.ID)
 	if err != nil {
-		return fmt.Errorf("invalid user_id format: %w", err)
+		return fmt.Errorf("invalid id format: %w", err)
 	}
 
-	_, err = r.client.Message.
+	_, err = r.client.User.
 		Create().
-		SetID(uuid.MustParse(msg.ID)).
-		SetUserID(userID.String()).
-		SetText(msg.Text).
+		SetID(uuid.MustParse(ID.String())).
+		SetEmail(user.Email).
+		SetName(user.Name).
 		Save(ctx)
 
 	return err
 }
 
-func (r *EntRepository) Get(ctx context.Context, id string) (*Message, error) {
-	messageID, err := uuid.Parse(id)
+func (r *EntRepository) Get(ctx context.Context, id string) (*User, error) {
+	ID, err := uuid.Parse(id)
 	if err != nil {
-		return nil, fmt.Errorf("invalid message id format: %w", err)
+		return nil, fmt.Errorf("invalid user id format: %w", err)
 	}
 
-	entMsg, err := r.client.Message.
+	entMsg, err := r.client.User.
 		Query().
-		Where(message.ID(messageID)).
+		Where(user.ID(ID)).
 		Only(ctx)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &Message{
-		ID:     entMsg.ID.String(),
-		UserID: entMsg.UserID,
-		Text:   entMsg.Text,
+	return &User{
+		ID:        entMsg.ID.String(),
+		Email:     entMsg.Email,
+		Name:      entMsg.Name,
+		CreatedAt: entMsg.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: entMsg.UpdatedAt.Format(time.RFC3339),
 	}, nil
 }
 
-func (s *server) Post(ctx context.Context, req *connect.Request[messagev1.PostRequest]) (*connect.Response[messagev1.PostResponse], error) {
-	slog.Info("Received Post request", "user", req.Msg.UserId, "text", req.Msg.Text)
+func (s *server) Post(ctx context.Context, req *connect.Request[userv1.PostRequest]) (*connect.Response[userv1.PostResponse], error) {
+	slog.Info("Received Post request", "email", req.Msg.Email, "name", req.Msg.Name)
 	id, err := uuid.NewV7()
 	if err != nil {
 		slog.Error("Failed to generate UUID", "error", err)
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to generate UUID: %w", err))
 	}
 
-	msg := Message{
-		ID:     id.String(),
-		UserID: req.Msg.UserId,
-		Text:   req.Msg.Text,
+	u := User{
+		ID:    id.String(),
+		Email: req.Msg.Email,
+		Name:  req.Msg.Name,
 	}
 
 	repository := NewEntRepository(s.client)
-	if err := repository.Save(ctx, msg); err != nil {
-		slog.Error("Failed to save message", "error", err)
-		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to save message: %w", err))
+	if err := repository.Save(ctx, u); err != nil {
+		slog.Error("Failed to save user", "error", err)
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to save user: %w", err))
 	}
 
-	return &connect.Response[messagev1.PostResponse]{
-		Msg: &messagev1.PostResponse{
-			Id: id.String(),
+	return &connect.Response[userv1.PostResponse]{
+		Msg: &userv1.PostResponse{
+			Id:        id.String(),
+			Email:     u.Email,
+			Name:      u.Name,
+			CreatedAt: u.CreatedAt,
+			UpdatedAt: u.UpdatedAt,
 		},
 	}, nil
 }
 
-func (s *server) Get(ctx context.Context, req *connect.Request[messagev1.GetRequest]) (*connect.Response[messagev1.GetResponse], error) {
+func (s *server) Get(ctx context.Context, req *connect.Request[userv1.GetRequest]) (*connect.Response[userv1.GetResponse], error) {
 	slog.Info("Received Get request", "id", req.Msg.Id)
 
 	repository := NewEntRepository(s.client)
-	msg, err := repository.Get(ctx, req.Msg.Id)
+	u, err := repository.Get(ctx, req.Msg.Id)
 	if err != nil {
-		slog.Error("Failed to get message", "error", err)
-		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("message not found: %w", err))
+		slog.Error("Failed to get user", "error", err)
+		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("user not found: %w", err))
 	}
 
-	return &connect.Response[messagev1.GetResponse]{
-		Msg: &messagev1.GetResponse{
-			UserId: msg.UserID,
-			Text:   msg.Text,
+	return &connect.Response[userv1.GetResponse]{
+		Msg: &userv1.GetResponse{
+			Id:        u.ID,
+			Email:     u.Email,
+			Name:      u.Name,
+			CreatedAt: u.CreatedAt,
+			UpdatedAt: u.UpdatedAt,
 		},
 	}, nil
 }
 
-func (s *server) PingPong(ctx context.Context, req *connect.Request[messagev1.PingPongRequest]) (*connect.Response[messagev1.PingPongResponse], error) {
-	res := connect.NewResponse(&messagev1.PingPongResponse{
-		UserId: req.Msg.UserId,
-		Text:   req.Msg.Text,
+func (s *server) PingPong(ctx context.Context, req *connect.Request[userv1.PingPongRequest]) (*connect.Response[userv1.PingPongResponse], error) {
+	res := connect.NewResponse(&userv1.PingPongResponse{
+		Email: req.Msg.Email,
+		Name:  req.Msg.Name,
 	})
-	res.Header().Set("Message-Version", "v1")
+	res.Header().Set("User-Version", "v1")
 	return res, nil
 }
 
@@ -152,7 +164,7 @@ func main() {
 	slog.SetDefault(slog.New(slog.NewJSONHandler(log.Writer(), nil)))
 
 	// データベース接続の初期化
-	client, err := ent.Open("sqlite3", "./message.db?_fk=1")
+	client, err := ent.Open("sqlite3", "./user.db?_fk=1")
 	if err != nil {
 		slog.Error(fmt.Sprintf("failed opening connection to sqlite: %v", err))
 	}
@@ -172,14 +184,14 @@ func main() {
 
 	// reflection
 	reflector := grpcreflect.NewStaticReflector(
-		messagev1connect.MessageServiceName,
+		userv1connect.UserServiceName,
 	)
 	mux.Handle(grpcreflect.NewHandlerV1(reflector))
 	mux.Handle(grpcreflect.NewHandlerV1Alpha(reflector))
 
 	// health check
 	checker := grpchealth.NewStaticChecker(
-		messagev1connect.MessageServiceName,
+		userv1connect.UserServiceName,
 	)
 	mux.Handle(grpchealth.NewHandler(checker))
 
@@ -191,8 +203,8 @@ func main() {
 		client: client,
 	}
 
-	// message
-	path, handler := messagev1connect.NewMessageServiceHandler(svc)
+	// user
+	path, handler := userv1connect.NewUserServiceHandler(svc)
 	mux.Handle(path, handler)
 
 	// start server

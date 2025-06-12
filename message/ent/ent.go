@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/dev-shimada/grpc-federation-playground/ent/message"
+	"github.com/dev-shimada/grpc-federation-playground/message/ent/message"
 )
 
 // ent aliases to avoid import conflicts in user's code.
