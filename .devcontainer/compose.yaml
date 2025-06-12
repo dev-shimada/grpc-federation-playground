@@ -6,14 +6,6 @@ services:
     image: message-server
     ports:
       - "8081:8081"
-    # volumes:
-    #   - .:/app:cached
-    # healthcheck:
-    #   test: ["CMD-SHELL", "grpc-health-probe --addr=:8081 || exit 1"]
-    #   interval: 5s
-    #   timeout: 5s
-    #   retries: 2
-    #   start_period: 5s
   user:
     build:
       context: ../user
@@ -21,12 +13,3 @@ services:
     image: user-server
     ports:
       - "8082:8082"
-    # volumes:
-    #   - .:/app:cached
-    # healthcheck:
-    #   test: ["CMD-SHELL", "grpc-health-probe --addr=:8082 || exit 1"]
-    #   interval: 5s
-    #   timeout: 5s
-    #   retries: 2
-    #   start_period: 5s
-
