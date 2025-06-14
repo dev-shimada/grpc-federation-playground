@@ -1,0 +1,8 @@
+services:
+  bff:
+    build:
+      context: ../bff
+      dockerfile: ../.devcontainer/bff/Dockerfile
+    volumes:
+      - ..:/workspace:cached
+    command: sleep infinity

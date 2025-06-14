@@ -1,0 +1,99 @@
+syntax = "proto3";
+
+package bff.v1;
+
+import "google/protobuf/timestamp.proto";
+import "grpc/federation/federation.proto";
+
+option go_package = "github.com/dev-shimada/grpc-federation-playground/bff/gen/bff/v1;bffv1";
+
+service BffService {
+  option (grpc.federation.service) = {};
+  // rpc Post(PostRequest) returns (PostResponse);
+  rpc GetMessage(GetMessageRequest) returns (GetMessageResponse);
+  // rpc PingPong(PingPongRequest) returns (PingPongResponse);
+}
+
+message GetMessageRequest {
+  string message_id = 1;
+  string user_id = 2;
+}
+message GetMessageResponse {
+  option (grpc.federation.message) = {
+    def: {
+      name: "user"
+      call: {
+        method: "user.UserService/Get"
+        request: {
+          field: "user_id"
+          by: "$.user_id"
+        }
+      }
+    }
+  };
+  Message message = 1 [(grpc.federation.field).by = "{}"];
+  User user = 2 [(grpc.federation.field).by = "user.user"];
+}
+message Message {
+  User user = 1 [(grpc.federation.field).by = "user"];
+  string text = 2 [(grpc.federation.field).by = "'Hello, world!'"];
+}
+
+message User {
+  option (grpc.federation.message) = {
+    def: {
+      name: "res"
+      call: {
+        method: "user.UserService/Get"
+        request: {
+          field: "id"
+          by: "$.uid"
+        }
+      }
+    }
+    def: {
+      by: "res"
+      autobind: true
+    }
+  };
+  string id = 1 [(grpc.federation.field).by = "user.id"];
+  string email = 2 [(grpc.federation.field).by = "user.email"];
+  string name = 3 [(grpc.federation.field).by = "user.name"];
+  google.protobuf.Timestamp created_at = 4 [(grpc.federation.field).by = "user.created_at"];
+  google.protobuf.Timestamp updated_at = 5 [(grpc.federation.field).by = "user.updated_at"];
+}
+
+// message PostRequest {
+//   string email = 1;
+//   string name = 2;
+// }
+
+// message PostResponse {
+//   string id = 1;
+//   string email = 2;
+//   string name = 3;
+//   string created_at = 4;
+//   string updated_at = 5;
+// }
+
+// message GetRequest {
+//   string id = 1;
+// }
+
+// message GetResponse {
+//   string id = 1;
+//   string email = 2;
+//   string name = 3;
+//   string created_at = 4;
+//   string updated_at = 5;
+// }
+
+// message PingPongRequest {
+//   string email = 1;
+//   string name = 2;
+// }
+
+// message PingPongResponse {
+//   string email = 1;
+//   string name = 2;
+// }
