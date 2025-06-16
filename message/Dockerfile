@@ -11,7 +11,6 @@ COPY go.sum /workspace
 RUN go mod download
 COPY ent /workspace/ent
 COPY gen /workspace/gen
-COPY message /workspace/message
 COPY main.go /workspace
 
 RUN  <<EOF
