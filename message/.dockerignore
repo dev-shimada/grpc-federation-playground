@@ -3,5 +3,4 @@
 !go.sum
 !ent
 !gen
-!message
 !main.go

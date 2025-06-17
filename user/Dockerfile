@@ -23,6 +23,6 @@ FROM --platform=$BUILDPLATFORM gcr.io/distroless/base-debian12:latest
 WORKDIR /app
 COPY --from=build /workspace/bin/app /app/app
 COPY --from=build /go/bin/grpc-health-probe /bin/grpc-health-probe
-HEALTHCHECK --interval=10s --timeout=3s --start-period=5s CMD ["/bin/grpc-health-probe", "-addr=:8082"] || exit 1
+HEALTHCHECK --interval=10s --timeout=3s --start-period=5s CMD ["/bin/grpc-health-probe", "-addr=:8082"]
 EXPOSE 8082
 ENTRYPOINT [ "/app/app" ]

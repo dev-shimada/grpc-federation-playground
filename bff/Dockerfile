@@ -9,9 +9,7 @@ WORKDIR /workspace
 COPY go.mod /workspace
 COPY go.sum /workspace
 RUN go mod download
-COPY ent /workspace/ent
-COPY gen /workspace/gen
-COPY bff /workspace/bff
+# COPY gen /workspace/gen
 COPY main.go /workspace
 
 RUN  <<EOF
@@ -24,6 +22,6 @@ FROM --platform=$BUILDPLATFORM gcr.io/distroless/base-debian12:latest
 WORKDIR /app
 COPY --chown=nonroot:nonroot --from=build /workspace/bin/app /app/app
 COPY --chown=nonroot:nonroot --from=build /go/bin/grpc-health-probe /bin/grpc-health-probe
-HEALTHCHECK --interval=10s --timeout=3s --start-period=5s CMD ["/bin/grpc-health-probe", "-addr=:8080"] || exit 1
+HEALTHCHECK --interval=10s --timeout=3s --start-period=5s CMD ["/bin/grpc-health-probe", "-addr=:8080"]
 EXPOSE 8080
 ENTRYPOINT [ "/app/app" ]

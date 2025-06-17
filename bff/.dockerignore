@@ -2,5 +2,4 @@
 !go.mod
 !go.sum
 !gen
-!bff
 !main.go
