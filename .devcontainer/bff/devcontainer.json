@@ -9,7 +9,8 @@
                 "golang.Go",
                 "GitHub.copilot",
                 "RooVeterinaryInc.roo-cline",
-                "bufbuild.vscode-buf"
+                "bufbuild.vscode-buf",
+                "Mercari.grpc-federation"
             ]
         }
     },

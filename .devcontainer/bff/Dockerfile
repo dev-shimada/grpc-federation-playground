@@ -15,6 +15,7 @@ go install github.com/go-delve/delve/cmd/dlv@latest
 go install github.com/cweill/gotests/gotests@latest
 go install github.com/goreleaser/goreleaser/v2@latest
 go install github.com/fullstorydev/grpcurl/cmd/grpcurl@latest
+go install github.com/mercari/grpc-federation/cmd/grpc-federation-language-server@latest
 curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin latest
 # buf cli
 BIN="/usr/local/bin"
