@@ -4,6 +4,10 @@ package bff.v1;
 
 import "google/protobuf/timestamp.proto";
 import "grpc/federation/federation.proto";
+import "user/v1/user.proto";
+import "message/v1/message.proto";
+option (grpc.federation.file).import = "user/v1/user.proto";
+option (grpc.federation.file).import = "message/v1/message.proto";
 
 option go_package = "github.com/dev-shimada/grpc-federation-playground/bff/gen/bff/v1;bffv1";
 
@@ -23,16 +27,26 @@ message GetMessageResponse {
     def: {
       name: "user"
       call: {
-        method: "user.UserService/Get"
+        method: "user.v1.UserService/Get"
         request: {
-          field: "user_id"
+          field: "id"
           by: "$.user_id"
+        }
+      }
+    },
+    def: {
+      name: "message"
+      call: {
+        method: "message.v1.MessageService/Get"
+        request: {
+          field: "id"
+          by: "$.message_id"
         }
       }
     }
   };
-  Message message = 1 [(grpc.federation.field).by = "{}"];
-  User user = 2 [(grpc.federation.field).by = "user.user"];
+  // Message message = 1 [(grpc.federation.field).by = "message"];
+  // User user = 2 [(grpc.federation.field).by = "user.user"];
 }
 message Message {
   User user = 1 [(grpc.federation.field).by = "user"];
@@ -44,7 +58,7 @@ message User {
     def: {
       name: "res"
       call: {
-        method: "user.UserService/Get"
+        method: "user.v1.UserService/Get"
         request: {
           field: "id"
           by: "$.uid"
