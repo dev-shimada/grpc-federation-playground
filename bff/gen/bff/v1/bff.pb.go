@@ -12,7 +12,7 @@ import (
 	_ "github.com/mercari/grpc-federation/grpc/federation"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -79,6 +79,8 @@ func (x *GetMessageRequest) GetUserId() string {
 
 type GetMessageResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	Message       *Message               `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+	User          *User                  `protobuf:"bytes,2,opt,name=user,proto3" json:"user,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -113,9 +115,23 @@ func (*GetMessageResponse) Descriptor() ([]byte, []int) {
 	return file_bff_v1_bff_proto_rawDescGZIP(), []int{1}
 }
 
+func (x *GetMessageResponse) GetMessage() *Message {
+	if x != nil {
+		return x.Message
+	}
+	return nil
+}
+
+func (x *GetMessageResponse) GetUser() *User {
+	if x != nil {
+		return x.User
+	}
+	return nil
+}
+
 type Message struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	User          *User                  `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	Text          string                 `protobuf:"bytes,2,opt,name=text,proto3" json:"text,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -151,11 +167,11 @@ func (*Message) Descriptor() ([]byte, []int) {
 	return file_bff_v1_bff_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *Message) GetUser() *User {
+func (x *Message) GetUserId() string {
 	if x != nil {
-		return x.User
+		return x.UserId
 	}
-	return nil
+	return ""
 }
 
 func (x *Message) GetText() string {
@@ -170,8 +186,6 @@ type User struct {
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Email         string                 `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
 	Name          string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -227,20 +241,6 @@ func (x *User) GetName() string {
 	return ""
 }
 
-func (x *User) GetCreatedAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.CreatedAt
-	}
-	return nil
-}
-
-func (x *User) GetUpdatedAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.UpdatedAt
-	}
-	return nil
-}
-
 var File_bff_v1_bff_proto protoreflect.FileDescriptor
 
 const file_bff_v1_bff_proto_rawDesc = "" +
@@ -249,33 +249,35 @@ const file_bff_v1_bff_proto_rawDesc = "" +
 	"\x11GetMessageRequest\x12\x1d\n" +
 	"\n" +
 	"message_id\x18\x01 \x01(\tR\tmessageId\x12\x17\n" +
-	"\auser_id\x18\x02 \x01(\tR\x06userId\"\x8d\x01\n" +
-	"\x12GetMessageResponse:w\x9aJt\n" +
-	"2\n" +
-	"\x04userr*\n" +
-	"\x17user.v1.UserService/Get\x12\x0f\n" +
-	"\x02id\x12\t$.user_id\n" +
-	">\n" +
-	"\amessager3\n" +
-	"\x1dmessage.v1.MessageService/Get\x12\x12\n" +
-	"\x02id\x12\f$.message_id\"`\n" +
-	"\aMessage\x12+\n" +
-	"\x04user\x18\x01 \x01(\v2\f.bff.v1.UserB\t\x9aJ\x06\x12\x04userR\x04user\x12(\n" +
-	"\x04text\x18\x02 \x01(\tB\x14\x9aJ\x11\x12\x0f'Hello, world!'R\x04text\"\xce\x02\n" +
-	"\x04User\x12\x1c\n" +
-	"\x02id\x18\x01 \x01(\tB\f\x9aJ\t\x12\auser.idR\x02id\x12%\n" +
-	"\x05email\x18\x02 \x01(\tB\x0f\x9aJ\f\x12\n" +
-	"user.emailR\x05email\x12\"\n" +
-	"\x04name\x18\x03 \x01(\tB\x0e\x9aJ\v\x12\tuser.nameR\x04name\x12O\n" +
+	"\auser_id\x18\x02 \x01(\tR\x06userId\"\xca\x01\n" +
+	"\x12GetMessageResponse\x127\n" +
+	"\amessage\x18\x01 \x01(\v2\x0f.bff.v1.MessageB\f\x9aJ\t\x12\amessageR\amessage\x12+\n" +
+	"\x04user\x18\x02 \x01(\v2\f.bff.v1.UserB\t\x9aJ\x06\x12\x04userR\x04user:N\x9aJK\n" +
+	"(\n" +
+	"\amessagej\x1d\n" +
+	"\aMessage\x12\x12\n" +
+	"\x02id\x12\f$.message_id\n" +
+	"\x1f\n" +
+	"\x04userj\x17\n" +
+	"\x04User\x12\x0f\n" +
+	"\x02id\x12\t$.user_id\"q\n" +
+	"\aMessage\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x12\n" +
+	"\x04text\x18\x02 \x01(\tR\x04text:9\x9aJ6\n" +
+	"4\n" +
+	"\x03res\x18\x01r+\n" +
+	"\x1dmessage.v1.MessageService/Get\x12\n" +
 	"\n" +
-	"created_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x14\x9aJ\x11\x12\x0fuser.created_atR\tcreatedAt\x12O\n" +
+	"\x02id\x12\x04$.id\"u\n" +
+	"\x04User\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
+	"\x05email\x18\x02 \x01(\tR\x05email\x12\x12\n" +
+	"\x04name\x18\x03 \x01(\tR\x04name:3\x9aJ0\n" +
+	".\n" +
+	"\x03res\x18\x01r%\n" +
+	"\x17user.v1.UserService/Get\x12\n" +
 	"\n" +
-	"updated_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x14\x9aJ\x11\x12\x0fuser.updated_atR\tupdatedAt:;\x9aJ8\n" +
-	"-\n" +
-	"\x03resr&\n" +
-	"\x17user.v1.UserService/Get\x12\v\n" +
-	"\x02id\x12\x05$.uid\n" +
-	"\a\x18\x01Z\x03res2V\n" +
+	"\x02id\x12\x04$.id2V\n" +
 	"\n" +
 	"BffService\x12C\n" +
 	"\n" +
@@ -297,23 +299,21 @@ func file_bff_v1_bff_proto_rawDescGZIP() []byte {
 
 var file_bff_v1_bff_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_bff_v1_bff_proto_goTypes = []any{
-	(*GetMessageRequest)(nil),     // 0: bff.v1.GetMessageRequest
-	(*GetMessageResponse)(nil),    // 1: bff.v1.GetMessageResponse
-	(*Message)(nil),               // 2: bff.v1.Message
-	(*User)(nil),                  // 3: bff.v1.User
-	(*timestamppb.Timestamp)(nil), // 4: google.protobuf.Timestamp
+	(*GetMessageRequest)(nil),  // 0: bff.v1.GetMessageRequest
+	(*GetMessageResponse)(nil), // 1: bff.v1.GetMessageResponse
+	(*Message)(nil),            // 2: bff.v1.Message
+	(*User)(nil),               // 3: bff.v1.User
 }
 var file_bff_v1_bff_proto_depIdxs = []int32{
-	3, // 0: bff.v1.Message.user:type_name -> bff.v1.User
-	4, // 1: bff.v1.User.created_at:type_name -> google.protobuf.Timestamp
-	4, // 2: bff.v1.User.updated_at:type_name -> google.protobuf.Timestamp
-	0, // 3: bff.v1.BffService.GetMessage:input_type -> bff.v1.GetMessageRequest
-	1, // 4: bff.v1.BffService.GetMessage:output_type -> bff.v1.GetMessageResponse
-	4, // [4:5] is the sub-list for method output_type
-	3, // [3:4] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	2, // 0: bff.v1.GetMessageResponse.message:type_name -> bff.v1.Message
+	3, // 1: bff.v1.GetMessageResponse.user:type_name -> bff.v1.User
+	0, // 2: bff.v1.BffService.GetMessage:input_type -> bff.v1.GetMessageRequest
+	1, // 3: bff.v1.BffService.GetMessage:output_type -> bff.v1.GetMessageResponse
+	3, // [3:4] is the sub-list for method output_type
+	2, // [2:3] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_bff_v1_bff_proto_init() }

@@ -29,34 +29,47 @@ message GetMessageRequest {
   string user_id = 2;
 }
 message GetMessageResponse {
-  option (grpc.federation.message) = {
-    def: {
-      name: "user"
-      call: {
-        method: "user.v1.UserService/Get"
-        request: {
-          field: "id"
-          by: "$.user_id"
-        }
-      }
-    },
+  option (.grpc.federation.message) = {
     def: {
       name: "message"
-      call: {
-        method: "message.v1.MessageService/Get"
-        request: {
-          field: "id"
+      message: {
+        name: "Message"
+        args: {
+          name: "id"
           by: "$.message_id"
         }
       }
     }
+    def: {
+      name: "user"
+      message: {
+        name: "User"
+        args: {
+          name: "id"
+          by: "$.user_id"
+        }
+      }
+    }
   };
-  // Message message = 1 [(grpc.federation.field).by = "message"];
-  // User user = 2 [(grpc.federation.field).by = "user.user"];
+  Message message = 1 [(grpc.federation.field).by = "message"];
+  User user = 2 [(grpc.federation.field).by = "user"];
 }
 message Message {
-  User user = 1 [(grpc.federation.field).by = "user"];
-  string text = 2 [(grpc.federation.field).by = "'Hello, world!'"];
+  option (grpc.federation.message) = {
+    def: {
+      name: "res"
+      call: {
+        method: "message.v1.MessageService/Get"
+        request: {
+          field: "id"
+          by: "$.id"
+        }
+      }
+      autobind: true
+    }
+  };
+  string user_id = 1;
+  string text = 2;
 }
 
 message User {
@@ -67,20 +80,17 @@ message User {
         method: "user.v1.UserService/Get"
         request: {
           field: "id"
-          by: "$.uid"
+          by: "$.id"
         }
       }
-    }
-    def: {
-      by: "res"
       autobind: true
     }
   };
-  string id = 1 [(grpc.federation.field).by = "user.id"];
-  string email = 2 [(grpc.federation.field).by = "user.email"];
-  string name = 3 [(grpc.federation.field).by = "user.name"];
-  google.protobuf.Timestamp created_at = 4 [(grpc.federation.field).by = "user.created_at"];
-  google.protobuf.Timestamp updated_at = 5 [(grpc.federation.field).by = "user.updated_at"];
+  string id = 1;
+  string email = 2;
+  string name = 3;
+  // google.protobuf.Timestamp created_at = 4;
+  // google.protobuf.Timestamp updated_at = 5;
 }
 
 // message PostRequest {
