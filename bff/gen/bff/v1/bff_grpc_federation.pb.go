@@ -3,7 +3,7 @@
 //
 //	protoc-gen-grpc-federation: v1.9.9
 //
-// source: bff.proto
+// source: bff/v1/bff.proto
 package bffv1
 
 import (
@@ -17,8 +17,8 @@ import (
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"
 
-	messagev1 "github.com/dev-shimada/grpc-federation-playground/message/gen/message/v1"
-	userv1 "github.com/dev-shimada/grpc-federation-playground/user/gen/user/v1"
+	messagev1 "github.com/dev-shimada/grpc-federation-playground/bff/gen/message/v1"
+	userv1 "github.com/dev-shimada/grpc-federation-playground/bff/gen/user/v1"
 )
 
 var (
@@ -27,8 +27,22 @@ var (
 
 // Bff_V1_GetMessageResponseArgument is argument for "bff.v1.GetMessageResponse" message.
 type BffService_Bff_V1_GetMessageResponseArgument struct {
+	Message   *Message
 	MessageId string
+	User      *User
 	UserId    string
+}
+
+// Bff_V1_MessageArgument is argument for "bff.v1.Message" message.
+type BffService_Bff_V1_MessageArgument struct {
+	Id  string
+	Res *messagev1.GetResponse
+}
+
+// Bff_V1_UserArgument is argument for "bff.v1.User" message.
+type BffService_Bff_V1_UserArgument struct {
+	Id  string
+	Res *userv1.GetResponse
 }
 
 // BffServiceConfig configuration required to initialize the service that use GRPC Federation.
@@ -132,6 +146,12 @@ func NewBffService(cfg BffServiceConfig) (*BffService, error) {
 			"message_id": grpcfed.NewCELFieldType(grpcfed.CELStringType, "MessageId"),
 			"user_id":    grpcfed.NewCELFieldType(grpcfed.CELStringType, "UserId"),
 		},
+		"grpc.federation.private.bff.v1.MessageArgument": {
+			"id": grpcfed.NewCELFieldType(grpcfed.CELStringType, "Id"),
+		},
+		"grpc.federation.private.bff.v1.UserArgument": {
+			"id": grpcfed.NewCELFieldType(grpcfed.CELStringType, "Id"),
+		},
 	}
 	celTypeHelper := grpcfed.NewCELTypeHelper("bff.v1", celTypeHelperFieldMap)
 	var celEnvOpts []grpcfed.CELEnvOption
@@ -204,34 +224,34 @@ func (s *BffService) resolve_Bff_V1_GetMessageResponse(ctx context.Context, req 
 	type localValueType struct {
 		*grpcfed.LocalValue
 		vars struct {
-			Message *messagev1.GetResponse
-			User    *userv1.GetResponse
+			Message *Message
+			User    *User
 		}
 	}
 	value := &localValueType{LocalValue: grpcfed.NewLocalValue(ctx, s.celEnvOpts, "grpc.federation.private.bff.v1.GetMessageResponseArgument", req)}
 	/*
 		def {
-		  name: "user"
-		  call {
-		    method: "user.v1.UserService/Get"
-		    request { field: "id", by: "$.user_id" }
+		  name: "message"
+		  message {
+		    name: "Message"
+		    args { name: "id", by: "$.message_id" }
 		  }
 		}
 	*/
-	def_user := func(ctx context.Context) error {
-		return grpcfed.EvalDef(ctx, value, grpcfed.Def[*userv1.GetResponse, *localValueType]{
-			Name: `user`,
-			Type: grpcfed.CELObjectType("user.v1.GetResponse"),
-			Setter: func(value *localValueType, v *userv1.GetResponse) error {
-				value.vars.User = v
+	def_message := func(ctx context.Context) error {
+		return grpcfed.EvalDef(ctx, value, grpcfed.Def[*Message, *localValueType]{
+			Name: `message`,
+			Type: grpcfed.CELObjectType("bff.v1.Message"),
+			Setter: func(value *localValueType, v *Message) error {
+				value.vars.Message = v
 				return nil
 			},
 			Message: func(ctx context.Context, value *localValueType) (any, error) {
-				args := &userv1.GetRequest{}
-				// { field: "id", by: "$.user_id" }
+				args := &BffService_Bff_V1_MessageArgument{}
+				// { name: "id", by: "$.message_id" }
 				if err := grpcfed.SetCELValue(ctx, &grpcfed.SetCELValueParam[string]{
 					Value:      value,
-					Expr:       `$.user_id`,
+					Expr:       `$.message_id`,
 					CacheIndex: 1,
 					Setter: func(v string) error {
 						args.Id = v
@@ -240,12 +260,9 @@ func (s *BffService) resolve_Bff_V1_GetMessageResponse(ctx context.Context, req 
 				}); err != nil {
 					return nil, err
 				}
-				grpcfed.Logger(ctx).DebugContext(ctx, "call user.v1.UserService/Get", slog.Any("user.v1.GetRequest", s.logvalue_User_V1_GetRequest(args)))
-				ret, err := s.client.User_V1_UserServiceClient.Get(ctx, args)
+				ret, err := s.resolve_Bff_V1_Message(ctx, args)
 				if err != nil {
-					if err := s.errorHandler(ctx, BffService_DependentMethod_User_V1_UserService_Get, err); err != nil {
-						return nil, grpcfed.NewErrorWithLogAttrs(err, slog.LevelError, grpcfed.LogAttrs(ctx))
-					}
+					return nil, err
 				}
 				return ret, nil
 			},
@@ -254,27 +271,27 @@ func (s *BffService) resolve_Bff_V1_GetMessageResponse(ctx context.Context, req 
 
 	/*
 		def {
-		  name: "message"
-		  call {
-		    method: "message.v1.MessageService/Get"
-		    request { field: "id", by: "$.message_id" }
+		  name: "user"
+		  message {
+		    name: "User"
+		    args { name: "id", by: "$.user_id" }
 		  }
 		}
 	*/
-	def_message := func(ctx context.Context) error {
-		return grpcfed.EvalDef(ctx, value, grpcfed.Def[*messagev1.GetResponse, *localValueType]{
-			Name: `message`,
-			Type: grpcfed.CELObjectType("message.v1.GetResponse"),
-			Setter: func(value *localValueType, v *messagev1.GetResponse) error {
-				value.vars.Message = v
+	def_user := func(ctx context.Context) error {
+		return grpcfed.EvalDef(ctx, value, grpcfed.Def[*User, *localValueType]{
+			Name: `user`,
+			Type: grpcfed.CELObjectType("bff.v1.User"),
+			Setter: func(value *localValueType, v *User) error {
+				value.vars.User = v
 				return nil
 			},
 			Message: func(ctx context.Context, value *localValueType) (any, error) {
-				args := &messagev1.GetRequest{}
-				// { field: "id", by: "$.message_id" }
+				args := &BffService_Bff_V1_UserArgument{}
+				// { name: "id", by: "$.user_id" }
 				if err := grpcfed.SetCELValue(ctx, &grpcfed.SetCELValueParam[string]{
 					Value:      value,
-					Expr:       `$.message_id`,
+					Expr:       `$.user_id`,
 					CacheIndex: 2,
 					Setter: func(v string) error {
 						args.Id = v
@@ -283,12 +300,9 @@ func (s *BffService) resolve_Bff_V1_GetMessageResponse(ctx context.Context, req 
 				}); err != nil {
 					return nil, err
 				}
-				grpcfed.Logger(ctx).DebugContext(ctx, "call message.v1.MessageService/Get", slog.Any("message.v1.GetRequest", s.logvalue_Message_V1_GetRequest(args)))
-				ret, err := s.client.Message_V1_MessageServiceClient.Get(ctx, args)
+				ret, err := s.resolve_Bff_V1_User(ctx, args)
 				if err != nil {
-					if err := s.errorHandler(ctx, BffService_DependentMethod_Message_V1_MessageService_Get, err); err != nil {
-						return nil, grpcfed.NewErrorWithLogAttrs(err, slog.LevelError, grpcfed.LogAttrs(ctx))
-					}
+					return nil, err
 				}
 				return ret, nil
 			},
@@ -322,10 +336,197 @@ func (s *BffService) resolve_Bff_V1_GetMessageResponse(ctx context.Context, req 
 		return nil, err
 	}
 
+	// assign named parameters to message arguments to pass to the custom resolver.
+	req.Message = value.vars.Message
+	req.User = value.vars.User
+
 	// create a message value to be returned.
 	ret := &GetMessageResponse{}
 
+	// field binding section.
+	// (grpc.federation.field).by = "message"
+	if err := grpcfed.SetCELValue(ctx, &grpcfed.SetCELValueParam[*Message]{
+		Value:      value,
+		Expr:       `message`,
+		CacheIndex: 3,
+		Setter: func(v *Message) error {
+			ret.Message = v
+			return nil
+		},
+	}); err != nil {
+		grpcfed.RecordErrorToSpan(ctx, err)
+		return nil, err
+	}
+	// (grpc.federation.field).by = "user"
+	if err := grpcfed.SetCELValue(ctx, &grpcfed.SetCELValueParam[*User]{
+		Value:      value,
+		Expr:       `user`,
+		CacheIndex: 4,
+		Setter: func(v *User) error {
+			ret.User = v
+			return nil
+		},
+	}); err != nil {
+		grpcfed.RecordErrorToSpan(ctx, err)
+		return nil, err
+	}
+
 	grpcfed.Logger(ctx).DebugContext(ctx, "resolved bff.v1.GetMessageResponse", slog.Any("bff.v1.GetMessageResponse", s.logvalue_Bff_V1_GetMessageResponse(ret)))
+	return ret, nil
+}
+
+// resolve_Bff_V1_Message resolve "bff.v1.Message" message.
+func (s *BffService) resolve_Bff_V1_Message(ctx context.Context, req *BffService_Bff_V1_MessageArgument) (*Message, error) {
+	ctx, span := s.tracer.Start(ctx, "bff.v1.Message")
+	defer span.End()
+	ctx = grpcfed.WithLogger(ctx, grpcfed.Logger(ctx), grpcfed.LogAttrs(ctx)...)
+
+	grpcfed.Logger(ctx).DebugContext(ctx, "resolve bff.v1.Message", slog.Any("message_args", s.logvalue_Bff_V1_MessageArgument(req)))
+	type localValueType struct {
+		*grpcfed.LocalValue
+		vars struct {
+			Res *messagev1.GetResponse
+		}
+	}
+	value := &localValueType{LocalValue: grpcfed.NewLocalValue(ctx, s.celEnvOpts, "grpc.federation.private.bff.v1.MessageArgument", req)}
+	/*
+		def {
+		  name: "res"
+		  autobind: true
+		  call {
+		    method: "message.v1.MessageService/Get"
+		    request { field: "id", by: "$.id" }
+		  }
+		}
+	*/
+	def_res := func(ctx context.Context) error {
+		return grpcfed.EvalDef(ctx, value, grpcfed.Def[*messagev1.GetResponse, *localValueType]{
+			Name: `res`,
+			Type: grpcfed.CELObjectType("message.v1.GetResponse"),
+			Setter: func(value *localValueType, v *messagev1.GetResponse) error {
+				value.vars.Res = v
+				return nil
+			},
+			Message: func(ctx context.Context, value *localValueType) (any, error) {
+				args := &messagev1.GetRequest{}
+				// { field: "id", by: "$.id" }
+				if err := grpcfed.SetCELValue(ctx, &grpcfed.SetCELValueParam[string]{
+					Value:      value,
+					Expr:       `$.id`,
+					CacheIndex: 5,
+					Setter: func(v string) error {
+						args.Id = v
+						return nil
+					},
+				}); err != nil {
+					return nil, err
+				}
+				grpcfed.Logger(ctx).DebugContext(ctx, "call message.v1.MessageService/Get", slog.Any("message.v1.GetRequest", s.logvalue_Message_V1_GetRequest(args)))
+				ret, err := s.client.Message_V1_MessageServiceClient.Get(ctx, args)
+				if err != nil {
+					if err := s.errorHandler(ctx, BffService_DependentMethod_Message_V1_MessageService_Get, err); err != nil {
+						return nil, grpcfed.NewErrorWithLogAttrs(err, slog.LevelError, grpcfed.LogAttrs(ctx))
+					}
+				}
+				return ret, nil
+			},
+		})
+	}
+
+	if err := def_res(ctx); err != nil {
+		grpcfed.RecordErrorToSpan(ctx, err)
+		return nil, err
+	}
+
+	// assign named parameters to message arguments to pass to the custom resolver.
+	req.Res = value.vars.Res
+
+	// create a message value to be returned.
+	ret := &Message{}
+
+	// field binding section.
+	ret.UserId = value.vars.Res.GetUserId() // { name: "res", autobind: true }
+	ret.Text = value.vars.Res.GetText()     // { name: "res", autobind: true }
+
+	grpcfed.Logger(ctx).DebugContext(ctx, "resolved bff.v1.Message", slog.Any("bff.v1.Message", s.logvalue_Bff_V1_Message(ret)))
+	return ret, nil
+}
+
+// resolve_Bff_V1_User resolve "bff.v1.User" message.
+func (s *BffService) resolve_Bff_V1_User(ctx context.Context, req *BffService_Bff_V1_UserArgument) (*User, error) {
+	ctx, span := s.tracer.Start(ctx, "bff.v1.User")
+	defer span.End()
+	ctx = grpcfed.WithLogger(ctx, grpcfed.Logger(ctx), grpcfed.LogAttrs(ctx)...)
+
+	grpcfed.Logger(ctx).DebugContext(ctx, "resolve bff.v1.User", slog.Any("message_args", s.logvalue_Bff_V1_UserArgument(req)))
+	type localValueType struct {
+		*grpcfed.LocalValue
+		vars struct {
+			Res *userv1.GetResponse
+		}
+	}
+	value := &localValueType{LocalValue: grpcfed.NewLocalValue(ctx, s.celEnvOpts, "grpc.federation.private.bff.v1.UserArgument", req)}
+	/*
+		def {
+		  name: "res"
+		  autobind: true
+		  call {
+		    method: "user.v1.UserService/Get"
+		    request { field: "id", by: "$.id" }
+		  }
+		}
+	*/
+	def_res := func(ctx context.Context) error {
+		return grpcfed.EvalDef(ctx, value, grpcfed.Def[*userv1.GetResponse, *localValueType]{
+			Name: `res`,
+			Type: grpcfed.CELObjectType("user.v1.GetResponse"),
+			Setter: func(value *localValueType, v *userv1.GetResponse) error {
+				value.vars.Res = v
+				return nil
+			},
+			Message: func(ctx context.Context, value *localValueType) (any, error) {
+				args := &userv1.GetRequest{}
+				// { field: "id", by: "$.id" }
+				if err := grpcfed.SetCELValue(ctx, &grpcfed.SetCELValueParam[string]{
+					Value:      value,
+					Expr:       `$.id`,
+					CacheIndex: 6,
+					Setter: func(v string) error {
+						args.Id = v
+						return nil
+					},
+				}); err != nil {
+					return nil, err
+				}
+				grpcfed.Logger(ctx).DebugContext(ctx, "call user.v1.UserService/Get", slog.Any("user.v1.GetRequest", s.logvalue_User_V1_GetRequest(args)))
+				ret, err := s.client.User_V1_UserServiceClient.Get(ctx, args)
+				if err != nil {
+					if err := s.errorHandler(ctx, BffService_DependentMethod_User_V1_UserService_Get, err); err != nil {
+						return nil, grpcfed.NewErrorWithLogAttrs(err, slog.LevelError, grpcfed.LogAttrs(ctx))
+					}
+				}
+				return ret, nil
+			},
+		})
+	}
+
+	if err := def_res(ctx); err != nil {
+		grpcfed.RecordErrorToSpan(ctx, err)
+		return nil, err
+	}
+
+	// assign named parameters to message arguments to pass to the custom resolver.
+	req.Res = value.vars.Res
+
+	// create a message value to be returned.
+	ret := &User{}
+
+	// field binding section.
+	ret.Id = value.vars.Res.GetId()       // { name: "res", autobind: true }
+	ret.Email = value.vars.Res.GetEmail() // { name: "res", autobind: true }
+	ret.Name = value.vars.Res.GetName()   // { name: "res", autobind: true }
+
+	grpcfed.Logger(ctx).DebugContext(ctx, "resolved bff.v1.User", slog.Any("bff.v1.User", s.logvalue_Bff_V1_User(ret)))
 	return ret, nil
 }
 
@@ -333,7 +534,10 @@ func (s *BffService) logvalue_Bff_V1_GetMessageResponse(v *GetMessageResponse) s
 	if v == nil {
 		return slog.GroupValue()
 	}
-	return slog.GroupValue()
+	return slog.GroupValue(
+		slog.Any("message", s.logvalue_Bff_V1_Message(v.GetMessage())),
+		slog.Any("user", s.logvalue_Bff_V1_User(v.GetUser())),
+	)
 }
 
 func (s *BffService) logvalue_Bff_V1_GetMessageResponseArgument(v *BffService_Bff_V1_GetMessageResponseArgument) slog.Value {
@@ -343,6 +547,45 @@ func (s *BffService) logvalue_Bff_V1_GetMessageResponseArgument(v *BffService_Bf
 	return slog.GroupValue(
 		slog.String("message_id", v.MessageId),
 		slog.String("user_id", v.UserId),
+	)
+}
+
+func (s *BffService) logvalue_Bff_V1_Message(v *Message) slog.Value {
+	if v == nil {
+		return slog.GroupValue()
+	}
+	return slog.GroupValue(
+		slog.String("user_id", v.GetUserId()),
+		slog.String("text", v.GetText()),
+	)
+}
+
+func (s *BffService) logvalue_Bff_V1_MessageArgument(v *BffService_Bff_V1_MessageArgument) slog.Value {
+	if v == nil {
+		return slog.GroupValue()
+	}
+	return slog.GroupValue(
+		slog.String("id", v.Id),
+	)
+}
+
+func (s *BffService) logvalue_Bff_V1_User(v *User) slog.Value {
+	if v == nil {
+		return slog.GroupValue()
+	}
+	return slog.GroupValue(
+		slog.String("id", v.GetId()),
+		slog.String("email", v.GetEmail()),
+		slog.String("name", v.GetName()),
+	)
+}
+
+func (s *BffService) logvalue_Bff_V1_UserArgument(v *BffService_Bff_V1_UserArgument) slog.Value {
+	if v == nil {
+		return slog.GroupValue()
+	}
+	return slog.GroupValue(
+		slog.String("id", v.Id),
 	)
 }
 
