@@ -3,7 +3,7 @@ version: v2
 deps:
   - buf.build/mercari/grpc-federation
 modules:
-  - path: proto/bff/v1
+  - path: proto
 lint:
   use:
     - DEFAULT

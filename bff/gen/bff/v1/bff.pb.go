@@ -2,13 +2,13 @@
 // versions:
 // 	protoc-gen-go v1.36.6
 // 	protoc        (unknown)
-// source: bff.proto
+// source: bff/v1/bff.proto
 
 package bffv1
 
 import (
-	_ "github.com/dev-shimada/grpc-federation-playground/message/gen/message/v1"
-	_ "github.com/dev-shimada/grpc-federation-playground/user/gen/user/v1"
+	_ "github.com/dev-shimada/grpc-federation-playground/bff/gen/message/v1"
+	_ "github.com/dev-shimada/grpc-federation-playground/bff/gen/user/v1"
 	_ "github.com/mercari/grpc-federation/grpc/federation"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -35,7 +35,7 @@ type GetMessageRequest struct {
 
 func (x *GetMessageRequest) Reset() {
 	*x = GetMessageRequest{}
-	mi := &file_bff_proto_msgTypes[0]
+	mi := &file_bff_v1_bff_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -47,7 +47,7 @@ func (x *GetMessageRequest) String() string {
 func (*GetMessageRequest) ProtoMessage() {}
 
 func (x *GetMessageRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_bff_proto_msgTypes[0]
+	mi := &file_bff_v1_bff_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -60,7 +60,7 @@ func (x *GetMessageRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetMessageRequest.ProtoReflect.Descriptor instead.
 func (*GetMessageRequest) Descriptor() ([]byte, []int) {
-	return file_bff_proto_rawDescGZIP(), []int{0}
+	return file_bff_v1_bff_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *GetMessageRequest) GetMessageId() string {
@@ -85,7 +85,7 @@ type GetMessageResponse struct {
 
 func (x *GetMessageResponse) Reset() {
 	*x = GetMessageResponse{}
-	mi := &file_bff_proto_msgTypes[1]
+	mi := &file_bff_v1_bff_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -97,7 +97,7 @@ func (x *GetMessageResponse) String() string {
 func (*GetMessageResponse) ProtoMessage() {}
 
 func (x *GetMessageResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_bff_proto_msgTypes[1]
+	mi := &file_bff_v1_bff_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -110,7 +110,7 @@ func (x *GetMessageResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetMessageResponse.ProtoReflect.Descriptor instead.
 func (*GetMessageResponse) Descriptor() ([]byte, []int) {
-	return file_bff_proto_rawDescGZIP(), []int{1}
+	return file_bff_v1_bff_proto_rawDescGZIP(), []int{1}
 }
 
 type Message struct {
@@ -123,7 +123,7 @@ type Message struct {
 
 func (x *Message) Reset() {
 	*x = Message{}
-	mi := &file_bff_proto_msgTypes[2]
+	mi := &file_bff_v1_bff_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -135,7 +135,7 @@ func (x *Message) String() string {
 func (*Message) ProtoMessage() {}
 
 func (x *Message) ProtoReflect() protoreflect.Message {
-	mi := &file_bff_proto_msgTypes[2]
+	mi := &file_bff_v1_bff_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -148,7 +148,7 @@ func (x *Message) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Message.ProtoReflect.Descriptor instead.
 func (*Message) Descriptor() ([]byte, []int) {
-	return file_bff_proto_rawDescGZIP(), []int{2}
+	return file_bff_v1_bff_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *Message) GetUser() *User {
@@ -178,7 +178,7 @@ type User struct {
 
 func (x *User) Reset() {
 	*x = User{}
-	mi := &file_bff_proto_msgTypes[3]
+	mi := &file_bff_v1_bff_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -190,7 +190,7 @@ func (x *User) String() string {
 func (*User) ProtoMessage() {}
 
 func (x *User) ProtoReflect() protoreflect.Message {
-	mi := &file_bff_proto_msgTypes[3]
+	mi := &file_bff_v1_bff_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -203,7 +203,7 @@ func (x *User) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use User.ProtoReflect.Descriptor instead.
 func (*User) Descriptor() ([]byte, []int) {
-	return file_bff_proto_rawDescGZIP(), []int{3}
+	return file_bff_v1_bff_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *User) GetId() string {
@@ -241,11 +241,11 @@ func (x *User) GetUpdatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
-var File_bff_proto protoreflect.FileDescriptor
+var File_bff_v1_bff_proto protoreflect.FileDescriptor
 
-const file_bff_proto_rawDesc = "" +
+const file_bff_v1_bff_proto_rawDesc = "" +
 	"\n" +
-	"\tbff.proto\x12\x06bff.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a grpc/federation/federation.proto\x1a\x12user/v1/user.proto\x1a\x18message/v1/message.proto\"K\n" +
+	"\x10bff/v1/bff.proto\x12\x06bff.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a grpc/federation/federation.proto\x1a\x12user/v1/user.proto\x1a\x18message/v1/message.proto\"K\n" +
 	"\x11GetMessageRequest\x12\x1d\n" +
 	"\n" +
 	"message_id\x18\x01 \x01(\tR\tmessageId\x12\x17\n" +
@@ -284,26 +284,26 @@ const file_bff_proto_rawDesc = "" +
 	"com.bff.v1B\bBffProtoP\x01ZFgithub.com/dev-shimada/grpc-federation-playground/bff/gen/bff/v1;bffv1\xa2\x02\x03BXX\xaa\x02\x06Bff.V1\xca\x02\x06Bff\\V1\xe2\x02\x12Bff\\V1\\GPBMetadata\xea\x02\aBff::V1b\x06proto3"
 
 var (
-	file_bff_proto_rawDescOnce sync.Once
-	file_bff_proto_rawDescData []byte
+	file_bff_v1_bff_proto_rawDescOnce sync.Once
+	file_bff_v1_bff_proto_rawDescData []byte
 )
 
-func file_bff_proto_rawDescGZIP() []byte {
-	file_bff_proto_rawDescOnce.Do(func() {
-		file_bff_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_bff_proto_rawDesc), len(file_bff_proto_rawDesc)))
+func file_bff_v1_bff_proto_rawDescGZIP() []byte {
+	file_bff_v1_bff_proto_rawDescOnce.Do(func() {
+		file_bff_v1_bff_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_bff_v1_bff_proto_rawDesc), len(file_bff_v1_bff_proto_rawDesc)))
 	})
-	return file_bff_proto_rawDescData
+	return file_bff_v1_bff_proto_rawDescData
 }
 
-var file_bff_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
-var file_bff_proto_goTypes = []any{
+var file_bff_v1_bff_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_bff_v1_bff_proto_goTypes = []any{
 	(*GetMessageRequest)(nil),     // 0: bff.v1.GetMessageRequest
 	(*GetMessageResponse)(nil),    // 1: bff.v1.GetMessageResponse
 	(*Message)(nil),               // 2: bff.v1.Message
 	(*User)(nil),                  // 3: bff.v1.User
 	(*timestamppb.Timestamp)(nil), // 4: google.protobuf.Timestamp
 }
-var file_bff_proto_depIdxs = []int32{
+var file_bff_v1_bff_proto_depIdxs = []int32{
 	3, // 0: bff.v1.Message.user:type_name -> bff.v1.User
 	4, // 1: bff.v1.User.created_at:type_name -> google.protobuf.Timestamp
 	4, // 2: bff.v1.User.updated_at:type_name -> google.protobuf.Timestamp
@@ -316,26 +316,26 @@ var file_bff_proto_depIdxs = []int32{
 	0, // [0:3] is the sub-list for field type_name
 }
 
-func init() { file_bff_proto_init() }
-func file_bff_proto_init() {
-	if File_bff_proto != nil {
+func init() { file_bff_v1_bff_proto_init() }
+func file_bff_v1_bff_proto_init() {
+	if File_bff_v1_bff_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_bff_proto_rawDesc), len(file_bff_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_bff_v1_bff_proto_rawDesc), len(file_bff_v1_bff_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_bff_proto_goTypes,
-		DependencyIndexes: file_bff_proto_depIdxs,
-		MessageInfos:      file_bff_proto_msgTypes,
+		GoTypes:           file_bff_v1_bff_proto_goTypes,
+		DependencyIndexes: file_bff_v1_bff_proto_depIdxs,
+		MessageInfos:      file_bff_v1_bff_proto_msgTypes,
 	}.Build()
-	File_bff_proto = out.File
-	file_bff_proto_goTypes = nil
-	file_bff_proto_depIdxs = nil
+	File_bff_v1_bff_proto = out.File
+	file_bff_v1_bff_proto_goTypes = nil
+	file_bff_v1_bff_proto_depIdxs = nil
 }

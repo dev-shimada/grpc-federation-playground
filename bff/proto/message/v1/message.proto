@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package message.v1;
 
-option go_package = "github.com/dev-shimada/grpc-federation-playground/message/gen/message/v1;messagev1";
+option go_package = "github.com/dev-shimada/grpc-federation-playground/bff/gen/message/v1;messagev1";
 
 service MessageService {
   rpc Post(PostRequest) returns (PostResponse);

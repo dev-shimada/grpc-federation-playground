@@ -3,7 +3,7 @@
 //
 //	protoc-gen-grpc-federation: v1.9.9
 //
-// source: bff.proto
+// source: bff/v1/bff.proto
 package bffv1
 
 import (
@@ -17,8 +17,8 @@ import (
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"
 
-	messagev1 "github.com/dev-shimada/grpc-federation-playground/message/gen/message/v1"
-	userv1 "github.com/dev-shimada/grpc-federation-playground/user/gen/user/v1"
+	messagev1 "github.com/dev-shimada/grpc-federation-playground/bff/gen/message/v1"
+	userv1 "github.com/dev-shimada/grpc-federation-playground/bff/gen/user/v1"
 )
 
 var (

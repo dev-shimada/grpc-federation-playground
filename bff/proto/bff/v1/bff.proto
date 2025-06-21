@@ -6,8 +6,14 @@ import "google/protobuf/timestamp.proto";
 import "grpc/federation/federation.proto";
 import "user/v1/user.proto";
 import "message/v1/message.proto";
-option (grpc.federation.file).import = "user/v1/user.proto";
-option (grpc.federation.file).import = "message/v1/message.proto";
+// option (grpc.federation.file).import = "user/v1/user.proto";
+// option (grpc.federation.file).import = "message/v1/message.proto";
+option (grpc.federation.file) = {
+  import: [
+    "user/v1/user.proto",
+    "message/v1/message.proto"
+  ]
+};
 
 option go_package = "github.com/dev-shimada/grpc-federation-playground/bff/gen/bff/v1;bffv1";
 

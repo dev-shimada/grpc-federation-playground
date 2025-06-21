@@ -409,8 +409,8 @@ const file_user_v1_user_proto_rawDesc = "" +
 	"\vUserService\x123\n" +
 	"\x04Post\x12\x14.user.v1.PostRequest\x1a\x15.user.v1.PostResponse\x120\n" +
 	"\x03Get\x12\x13.user.v1.GetRequest\x1a\x14.user.v1.GetResponse\x12?\n" +
-	"\bPingPong\x12\x18.user.v1.PingPongRequest\x1a\x19.user.v1.PingPongResponseB\xa0\x01\n" +
-	"\vcom.user.v1B\tUserProtoP\x01ZIgithub.com/dev-shimada/grpc-federation-playground/user/gen/user/v1;userv1\xa2\x02\x03UXX\xaa\x02\aUser.V1\xca\x02\aUser\\V1\xe2\x02\x13User\\V1\\GPBMetadata\xea\x02\bUser::V1b\x06proto3"
+	"\bPingPong\x12\x18.user.v1.PingPongRequest\x1a\x19.user.v1.PingPongResponseB\x9f\x01\n" +
+	"\vcom.user.v1B\tUserProtoP\x01ZHgithub.com/dev-shimada/grpc-federation-playground/bff/gen/user/v1;userv1\xa2\x02\x03UXX\xaa\x02\aUser.V1\xca\x02\aUser\\V1\xe2\x02\x13User\\V1\\GPBMetadata\xea\x02\bUser::V1b\x06proto3"
 
 var (
 	file_user_v1_user_proto_rawDescOnce sync.Once
