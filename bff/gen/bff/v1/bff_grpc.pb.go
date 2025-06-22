@@ -26,7 +26,6 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type BffServiceClient interface {
-	// rpc Post(PostRequest) returns (PostResponse);
 	GetMessage(ctx context.Context, in *GetMessageRequest, opts ...grpc.CallOption) (*GetMessageResponse, error)
 }
 
@@ -52,7 +51,6 @@ func (c *bffServiceClient) GetMessage(ctx context.Context, in *GetMessageRequest
 // All implementations must embed UnimplementedBffServiceServer
 // for forward compatibility.
 type BffServiceServer interface {
-	// rpc Post(PostRequest) returns (PostResponse);
 	GetMessage(context.Context, *GetMessageRequest) (*GetMessageResponse, error)
 	mustEmbedUnimplementedBffServiceServer()
 }

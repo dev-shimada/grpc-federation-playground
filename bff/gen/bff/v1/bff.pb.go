@@ -12,7 +12,6 @@ import (
 	_ "github.com/mercari/grpc-federation/grpc/federation"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	_ "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -253,7 +252,7 @@ var File_bff_v1_bff_proto protoreflect.FileDescriptor
 
 const file_bff_v1_bff_proto_rawDesc = "" +
 	"\n" +
-	"\x10bff/v1/bff.proto\x12\x06bff.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a grpc/federation/federation.proto\x1a\x12user/v1/user.proto\x1a\x18message/v1/message.proto\"2\n" +
+	"\x10bff/v1/bff.proto\x12\x06bff.v1\x1a grpc/federation/federation.proto\x1a\x12user/v1/user.proto\x1a\x18message/v1/message.proto\"2\n" +
 	"\x11GetMessageRequest\x12\x1d\n" +
 	"\n" +
 	"message_id\x18\x01 \x01(\tR\tmessageId\"\xd0\x01\n" +
