@@ -30,7 +30,6 @@ type BffService_Bff_V1_GetMessageResponseArgument struct {
 	Message   *Message
 	MessageId string
 	User      *User
-	UserId    string
 }
 
 // Bff_V1_MessageArgument is argument for "bff.v1.Message" message.
@@ -144,7 +143,6 @@ func NewBffService(cfg BffServiceConfig) (*BffService, error) {
 	celTypeHelperFieldMap := grpcfed.CELTypeHelperFieldMap{
 		"grpc.federation.private.bff.v1.GetMessageResponseArgument": {
 			"message_id": grpcfed.NewCELFieldType(grpcfed.CELStringType, "MessageId"),
-			"user_id":    grpcfed.NewCELFieldType(grpcfed.CELStringType, "UserId"),
 		},
 		"grpc.federation.private.bff.v1.MessageArgument": {
 			"id": grpcfed.NewCELFieldType(grpcfed.CELStringType, "Id"),
@@ -204,7 +202,6 @@ func (s *BffService) GetMessage(ctx context.Context, req *GetMessageRequest) (re
 	}()
 	res, err := s.resolve_Bff_V1_GetMessageResponse(ctx, &BffService_Bff_V1_GetMessageResponseArgument{
 		MessageId: req.GetMessageId(),
-		UserId:    req.GetUserId(),
 	})
 	if err != nil {
 		grpcfed.RecordErrorToSpan(ctx, err)
@@ -274,7 +271,7 @@ func (s *BffService) resolve_Bff_V1_GetMessageResponse(ctx context.Context, req 
 		  name: "user"
 		  message {
 		    name: "User"
-		    args { name: "id", by: "$.user_id" }
+		    args { name: "id", by: "message.user_id" }
 		  }
 		}
 	*/
@@ -288,10 +285,10 @@ func (s *BffService) resolve_Bff_V1_GetMessageResponse(ctx context.Context, req 
 			},
 			Message: func(ctx context.Context, value *localValueType) (any, error) {
 				args := &BffService_Bff_V1_UserArgument{}
-				// { name: "id", by: "$.user_id" }
+				// { name: "id", by: "message.user_id" }
 				if err := grpcfed.SetCELValue(ctx, &grpcfed.SetCELValueParam[string]{
 					Value:      value,
-					Expr:       `$.user_id`,
+					Expr:       `message.user_id`,
 					CacheIndex: 2,
 					Setter: func(v string) error {
 						args.Id = v
@@ -309,30 +306,12 @@ func (s *BffService) resolve_Bff_V1_GetMessageResponse(ctx context.Context, req 
 		})
 	}
 
-	// A tree view of message dependencies is shown below.
-	/*
-	   message ─┐
-	      user ─┤
-	*/
-	eg, ctx1 := grpcfed.ErrorGroupWithContext(ctx)
-
-	grpcfed.GoWithRecover(eg, func() (any, error) {
-		if err := def_message(ctx1); err != nil {
-			grpcfed.RecordErrorToSpan(ctx1, err)
-			return nil, err
-		}
-		return nil, nil
-	})
-
-	grpcfed.GoWithRecover(eg, func() (any, error) {
-		if err := def_user(ctx1); err != nil {
-			grpcfed.RecordErrorToSpan(ctx1, err)
-			return nil, err
-		}
-		return nil, nil
-	})
-
-	if err := eg.Wait(); err != nil {
+	if err := def_message(ctx); err != nil {
+		grpcfed.RecordErrorToSpan(ctx, err)
+		return nil, err
+	}
+	if err := def_user(ctx); err != nil {
+		grpcfed.RecordErrorToSpan(ctx, err)
 		return nil, err
 	}
 
@@ -546,7 +525,6 @@ func (s *BffService) logvalue_Bff_V1_GetMessageResponseArgument(v *BffService_Bf
 	}
 	return slog.GroupValue(
 		slog.String("message_id", v.MessageId),
-		slog.String("user_id", v.UserId),
 	)
 }
 

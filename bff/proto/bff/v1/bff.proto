@@ -26,7 +26,6 @@ service BffService {
 
 message GetMessageRequest {
   string message_id = 1;
-  string user_id = 2;
 }
 message GetMessageResponse {
   option (.grpc.federation.message) = {
@@ -46,7 +45,7 @@ message GetMessageResponse {
         name: "User"
         args: {
           name: "id"
-          by: "$.user_id"
+          by: "message.user_id"
         }
       }
     }

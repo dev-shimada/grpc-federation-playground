@@ -27,8 +27,7 @@ const (
 
 type GetMessageRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	MessageId     string                 `protobuf:"bytes,1,opt,name=message_id,json=messageId,proto3" json:"message_id,omitempty"`
-	UserId        string                 `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	MessageId     string                 `protobuf:"bytes,1,opt,name=message_id,json=messageId,proto3" json:"message_id,omitempty"` // string user_id = 2;
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -66,13 +65,6 @@ func (*GetMessageRequest) Descriptor() ([]byte, []int) {
 func (x *GetMessageRequest) GetMessageId() string {
 	if x != nil {
 		return x.MessageId
-	}
-	return ""
-}
-
-func (x *GetMessageRequest) GetUserId() string {
-	if x != nil {
-		return x.UserId
 	}
 	return ""
 }
@@ -245,22 +237,21 @@ var File_bff_v1_bff_proto protoreflect.FileDescriptor
 
 const file_bff_v1_bff_proto_rawDesc = "" +
 	"\n" +
-	"\x10bff/v1/bff.proto\x12\x06bff.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a grpc/federation/federation.proto\x1a\x12user/v1/user.proto\x1a\x18message/v1/message.proto\"K\n" +
+	"\x10bff/v1/bff.proto\x12\x06bff.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a grpc/federation/federation.proto\x1a\x12user/v1/user.proto\x1a\x18message/v1/message.proto\"2\n" +
 	"\x11GetMessageRequest\x12\x1d\n" +
 	"\n" +
-	"message_id\x18\x01 \x01(\tR\tmessageId\x12\x17\n" +
-	"\auser_id\x18\x02 \x01(\tR\x06userId\"\xca\x01\n" +
+	"message_id\x18\x01 \x01(\tR\tmessageId\"\xd0\x01\n" +
 	"\x12GetMessageResponse\x127\n" +
 	"\amessage\x18\x01 \x01(\v2\x0f.bff.v1.MessageB\f\x9aJ\t\x12\amessageR\amessage\x12+\n" +
-	"\x04user\x18\x02 \x01(\v2\f.bff.v1.UserB\t\x9aJ\x06\x12\x04userR\x04user:N\x9aJK\n" +
+	"\x04user\x18\x02 \x01(\v2\f.bff.v1.UserB\t\x9aJ\x06\x12\x04userR\x04user:T\x9aJQ\n" +
 	"(\n" +
 	"\amessagej\x1d\n" +
 	"\aMessage\x12\x12\n" +
 	"\x02id\x12\f$.message_id\n" +
-	"\x1f\n" +
-	"\x04userj\x17\n" +
-	"\x04User\x12\x0f\n" +
-	"\x02id\x12\t$.user_id\"q\n" +
+	"%\n" +
+	"\x04userj\x1d\n" +
+	"\x04User\x12\x15\n" +
+	"\x02id\x12\x0fmessage.user_id\"q\n" +
 	"\aMessage\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x12\n" +
 	"\x04text\x18\x02 \x01(\tR\x04text:9\x9aJ6\n" +
