@@ -501,9 +501,11 @@ func (s *BffService) resolve_Bff_V1_User(ctx context.Context, req *BffService_Bf
 	ret := &User{}
 
 	// field binding section.
-	ret.Id = value.vars.Res.GetId()       // { name: "res", autobind: true }
-	ret.Email = value.vars.Res.GetEmail() // { name: "res", autobind: true }
-	ret.Name = value.vars.Res.GetName()   // { name: "res", autobind: true }
+	ret.Id = value.vars.Res.GetId()               // { name: "res", autobind: true }
+	ret.Email = value.vars.Res.GetEmail()         // { name: "res", autobind: true }
+	ret.Name = value.vars.Res.GetName()           // { name: "res", autobind: true }
+	ret.CreatedAt = value.vars.Res.GetCreatedAt() // { name: "res", autobind: true }
+	ret.UpdatedAt = value.vars.Res.GetUpdatedAt() // { name: "res", autobind: true }
 
 	grpcfed.Logger(ctx).DebugContext(ctx, "resolved bff.v1.User", slog.Any("bff.v1.User", s.logvalue_Bff_V1_User(ret)))
 	return ret, nil
@@ -555,6 +557,8 @@ func (s *BffService) logvalue_Bff_V1_User(v *User) slog.Value {
 		slog.String("id", v.GetId()),
 		slog.String("email", v.GetEmail()),
 		slog.String("name", v.GetName()),
+		slog.String("created_at", v.GetCreatedAt()),
+		slog.String("updated_at", v.GetUpdatedAt()),
 	)
 }
 
